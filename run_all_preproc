@@ -1,0 +1,11 @@
+#!/bin/bash 
+while read subj
+do 
+for a in 1 2
+do 
+for b in 1 2
+do
+tcsh -xef proc.${subj}_S${a}_R${b}_NL.ricor 2>&1 | tee output.proc.${subj}_S${a}_R${b}_NL.ricor
+done
+done
+done <subs.txt
