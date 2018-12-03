@@ -1,0 +1,42 @@
+#!/bin/bash
+
+while read subj
+do 
+for a in 1 2
+do 
+for b in 1 2
+do
+
+subdir=/home/dbrennan/MaxP/data/$subj
+ricdir=/home/dbrennan/MaxP/physio/$subj/session$a
+
+#3drefit -space ORIG $subdir/session_$a/rest_$b/fmCorrected_rest.nii.gz #force to orig space coordinates.
+
+afni_proc.py -subj_id ${subj}_S${a}_R${b}_NL.ricor \
+-dsets $subdir/session_$a/rest_$b/fmCorrected_rest.nii.gz \
+ -blocks despike ricor tshift align tlrc volreg blur mask regress \
+-tcat_remove_first_trs 3 \
+-ricor_regs_nfirst 3 \
+-ricor_regs $ricdir/regressors_$b.slibase.1D \
+-copy_anat $subdir/session_1/anat_1/anat_uni_brain+orig		\
+                       -tcat_remove_first_trs 3                \
+                        -ricor_regs_nfirst 3                    \
+                        -ricor_regs sb23/RICOR/r*.slibase.1D    \
+                        -align_opts_aea -cost lpc+ZZ -giant_move -partial_sagittal                       \
+                        -tlrc_base /home/prantik/bin/afni/MNI152_T1_2009c+tlrc                    \
+			-anat_has_skull no \
+                        -volreg_align_to MIN_OUTLIER                       \
+                        -volreg_align_e2a                                  \
+			-tlrc_NL_warp                                 \
+                        -volreg_tlrc_warp                                  \
+                        -blur_size 6                           \
+                        -regress_motion_per_run                 \
+                        -regress_censor_motion 0.2              \
+                        -regress_bandpass 0.01 0.1              \
+                        -regress_apply_mot_types demean deriv   \
+                        -regress_run_clustsim no                \
+                        -regress_est_blur_epits                 \
+                        -regress_est_blur_errts			
+done
+done
+done <subs.txt
