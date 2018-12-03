@@ -1,0 +1,13 @@
+#!/bin/bash
+
+while read subj
+do
+cd /home/dbrennan/MaxP/data/$subj/session_1/anat_1
+
+3dUnifize anat_inv2.nii.gz #create more ideal contrast for 3dSkullStrip
+
+3dSkullStrip -input Unifized+orig. -prefix Unifazed_brain_mask -push_to_edge -mask_vol #create brain mask
+
+3dcalc -a anat_uni.nii.gz -b ./Unifazed_brain_mask+orig -expr 'a*b' -prefix ./anat_uni_brain #apply brain mask to high-res T1
+
+done <subs.txt
