@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#MRI trigger, respiratory trace, cardiac trace, and oxygen saturation
+#100\u2009Hz (truncated)
+#3 second TR
+#70 slices
+#-cardiac_out
+#-respiration_out
+
+
+while read subj
+do 
+for a in 1 2 
+do 
+for b in 1 2
+do
+cd /home/dbrennan/MaxP/physio/$subj/session$a/
+
+cat physio_trig_resp_card_oxy_full_brain_$b.txt | awk '{ print sprintf("%.20f", $2); }' >> resp_$b.dat
+cat physio_trig_resp_card_oxy_full_brain_$b.txt | awk '{ print sprintf("%.20f", $3); }' >> card_$b.dat
+
+echo "running $subj"
+../../../RetroTS.py -r resp_$b.dat -c card_$b.dat -p 100 -n 70 -v 3 -prefix regressors_$b
+done
+done
+done <subs.txt
